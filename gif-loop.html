@@ -1,0 +1,97 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<dom-module id="gif-loop">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+      img {
+        display: none;
+        width: 100%;
+      }
+      img[active] {
+        display: block;
+      }
+    </style>
+    <template is="dom-repeat" items="[[frames]]">
+      <img src="[[item]]" active$="[[_isActive(index, _activeFrame)]]" />
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'gif-loop',
+
+      properties: {
+        frames: {
+          type: Array,
+          value: function() {
+            return [
+              'resources/tuuletus.gif.000',
+              'resources/tuuletus.gif.001',
+              'resources/tuuletus.gif.002',
+              'resources/tuuletus.gif.003',
+              'resources/tuuletus.gif.004',
+              'resources/tuuletus.gif.005',
+              'resources/tuuletus.gif.006',
+              'resources/tuuletus.gif.007',
+              'resources/tuuletus.gif.008'
+            ];
+          }
+        },
+
+        fps: {
+          type: Number,
+          value: 10
+        },
+
+        _activeFrame: {
+          type: Number,
+          value: 0
+        },
+
+        _timestamp: {
+          type: Number
+        },
+
+        _direction: {
+          type: Number,
+          value: 1
+        }
+      },
+
+      attached: function() {
+        window.requestAnimationFrame(this._animationStep.bind(this));
+      },
+
+      _isActive: function(index, _activeFrame) {
+        return index === _activeFrame;
+      },
+
+      _formatFps: function(fps) {
+        return Math.round(fps);
+      },
+
+      _advanceFrame: function() {
+        this._activeFrame += this._direction;
+        if (this._activeFrame >= this.frames.length - 1 || this._activeFrame === 0) {
+          this._direction = -this._direction;
+        }
+      },
+
+      _animationStep: function(timestamp) {
+        if (!this._timestamp) {
+          this._timestamp = timestamp;
+        }
+
+        if (timestamp - this._timestamp > 1000 / this.fps) {
+          this._advanceFrame();
+          this._timestamp = timestamp;
+        }
+        window.requestAnimationFrame(this._animationStep.bind(this));
+      }
+
+    });
+  </script>
+</dom-module>

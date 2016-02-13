@@ -1,0 +1,25 @@
+{
+  "name": "vent-it",
+  "authors": [
+    "Teemu Pöntelin <tehapo@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.2.4",
+    "iron-a11y-keys": "polymerelements/iron-a11y-keys#^1.0.4",
+    "paper-styles": "polymerelements/paper-styles#^1.1.3",
+    "paper-dialog": "polymerelements/paper-dialog#^1.0.4",
+    "neon-animation": "polymerelements/neon-animation#^1.1.0"
+  }
+}

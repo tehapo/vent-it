@@ -1,0 +1,101 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="bower_components/paper-styles/typography.html">
+<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="gif-loop.html">
+
+<dom-module id="vent-it">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply(--paper-font-common-base);
+      }
+      #about {
+        color: #eee;
+        background: rgba(0, 0, 0, 0.7);
+        transition: opacity 100ms;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 16px;
+      }
+      p.small {
+        font-size: 70%;
+      }
+      span {
+        font-size: 25px;
+        top: 5px;
+        position: relative;
+      }
+      a {
+        color: #00b4f0;
+      }
+    </style>
+    <gif-loop fps="[[_fps]]"></gif-loop>
+    <paper-dialog id="about" opened no-cancel-on-outside-click no-cancel-on-esc-key>
+      <h1>Vent It!</h1>
+      <p id="instructions">
+        Hit → ← → ← → arrow keys to help ventilate the meeting room.
+      </p>
+      <p class="small">
+        A Friday night code experiment from <a href="https://twitter.com/teemupontelin">@teemupontelin</a>.
+        <br />
+        Powered by <a href="https://www.polymer-project.org">Polymer</a> and some <span>🍺</span>
+      </p>
+    </paper-dialog>
+    <iron-a11y-keys target="[[_target]]" keys="left right" on-keys-pressed="_arrowPressed"></iron-a11y-keys>
+  </template>
+  <script>
+    Polymer({
+      is: 'vent-it',
+
+      properties: {
+        _fps: {
+          type: Number,
+          value: 5,
+          observer: '_fpsChanged'
+        },
+
+        _expectedKey: {
+          type: String
+        },
+
+        _lastArrow: {
+          type: Number
+        },
+
+        _target: {
+          type: Object,
+          value: function() {
+            return document.body;
+          }
+        }
+      },
+
+      attached: function(e) {
+        // Slow down automatically
+        window.setInterval(function() {
+          this._fps = Math.max(0.5, this._fps - 0.5);
+        }.bind(this), 100);
+      },
+
+      _fpsChanged: function(fps) {
+        if (fps <= 15) {
+          this.$.about.style.opacity = Math.max(0, 1 - fps / 10);
+        }
+      },
+
+      _arrowPressed: function(e) {
+        if (this._expectedKey === undefined || e.detail.combo === this._expectedKey) {
+          if (this._lastArrow) {
+            this._fps += (Math.max(0, 2 - (Date.now() - this._lastArrow) / 100));
+          }
+
+          // Expect the next key.
+          this._expectedKey = (e.detail.combo === 'left' ? 'right' : 'left');
+          this._lastArrow = Date.now();
+        }
+      }
+    });
+  </script>
+</dom-module>
