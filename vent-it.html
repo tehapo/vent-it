@@ -30,12 +30,28 @@
       a {
         color: #00b4f0;
       }
+      #touch-target-left,
+      #touch-target-right {
+        z-index: 9999;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50vw;
+      }
+      #touch-target-left {
+        left: 0;
+      }
+      #touch-target-right {
+        right: 0;
+      }
     </style>
     <gif-loop fps="[[_fps]]"></gif-loop>
+    <div id="touch-target-left" data-key="left" on-touchstart="_handleTouch"></div>
+    <div id="touch-target-right" data-key="right" on-touchstart="_handleTouch"></div>
     <paper-dialog id="about" opened no-cancel-on-outside-click no-cancel-on-esc-key>
       <h1>Vent It!</h1>
       <p id="instructions">
-        Hit → ← → ← → arrow keys to help ventilate the meeting room.
+        Hit → ← → ← → arrow keys or tap on left/right side of your screen to help ventilate the meeting room.
       </p>
       <p class="small">
         A Friday night <a href="https://github.com/tehapo/vent-it">code</a> experiment from <a href="https://twitter.com/teemupontelin">@teemupontelin</a>
@@ -79,6 +95,16 @@
         }.bind(this), 100);
       },
 
+      _handleTouch: function(e) {
+        console.log(e);
+        console.log(e.target);
+        this._arrowPressed({
+          detail: {
+            combo: e.target.getAttribute('data-key')
+          }
+        });
+      },
+
       _fpsChanged: function(fps) {
         if (fps <= 15) {
           this.$.about.style.opacity = Math.max(0, 1 - fps / 10);
@@ -94,6 +120,7 @@
           // Expect the next key.
           this._expectedKey = (e.detail.combo === 'left' ? 'right' : 'left');
           this._lastArrow = Date.now();
+          console.log(this._expectedKey, this._lastArrow);
         }
       }
     });
